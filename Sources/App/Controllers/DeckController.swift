@@ -4,7 +4,7 @@ import HTTP
 struct DeckController {
     
     let cardNames = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"]
-    let suits = ["heart", "diamonds", "spades", "clubs"]
+    let suitNames = ["heart", "diamonds", "spades", "clubs"]
     
     func addRoutes(to drop: Droplet) {
         let deckGroup = drop.grouped("deck")
@@ -31,12 +31,10 @@ struct DeckController {
             deckCount = decks > 0 ? decks : 1
         }
         for x in 0...(12 * deckCount)  {
-            for suit in suits {
+            for suit in suitNames {
                 let card = Card(value: cardNames[x%13], suit: suit, deck: deck)
                 try card.save()
             }
         }
     }
 }
-
-extension DeckController: EmptyInitializable { }

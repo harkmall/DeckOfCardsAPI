@@ -57,7 +57,22 @@ extension Deck: JSONConvertible {
         var json = JSON()
         try json.set("deckId", id)
         try json.set("shuffled", shuffled)
-        try json.set("cards", cards.all().makeJSON())
+        var cardsArray = try cards.all()
+        if (shuffled){
+            cardsArray.shuffle()
+        }
+        try json.set("cards", cardsArray.makeJSON())
         return json
+    }
+}
+
+extension DeckController: EmptyInitializable { }
+
+extension Array {
+    mutating func shuffle() {
+        for i in 0 ..< (count - 1) {
+            let j = Int(arc4random_uniform(UInt32(count - i))) + i
+            swapAt(i, j)
+        }
     }
 }
