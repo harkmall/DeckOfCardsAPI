@@ -12,9 +12,10 @@ final class Deck: Model {
     let storage = Storage()
     
     var shuffled: Bool
-    var cards: Children<Deck, Card> {
-        return children()
+    var cards: Siblings<Deck, Card, Pivot<Deck, Card>> {
+        return siblings()
     }
+    
     
     func makeRow() throws -> Row {
         return Row()

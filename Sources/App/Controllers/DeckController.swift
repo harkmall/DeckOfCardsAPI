@@ -32,8 +32,13 @@ struct DeckController {
         }
         for x in 0...(12 * deckCount)  {
             for suit in suitNames {
-                let card = Card(value: cardNames[x%13], suit: suit, deck: deck)
-                try card.save()
+                if let card = try Card.makeQuery().filter("suit", suit).filter("value", cardNames[x%13]).first() {
+                    try deck.cards.add(card)
+                    continue
+                }
+                let newCard = Card(value: cardNames[x%13], suit: suit, deck: deck)
+                try newCard.save()
+                try deck.cards.add(newCard)
             }
         }
     }
