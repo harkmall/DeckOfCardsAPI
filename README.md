@@ -1,7 +1,7 @@
 # DeckOfCardsAPI
 
 ### //TODO
-~~- Implement Shuffle~~
+~~- Implement Shuffle~~ (Shuffle doesn't maintain shuffled state, every time you request the deck again, it will get reshuffled. Probably not good, will look into that later.)
 
 ~~- Change Deck-Cards relationship to Siblings instead of Parent-Child~~
   

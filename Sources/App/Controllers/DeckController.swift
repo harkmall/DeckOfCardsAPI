@@ -22,6 +22,11 @@ struct DeckController {
             try self.addCards(req.data["deckCount"]?.int, toDeck: deck)
             return deck
         }
+        
+        deckGroup.get(Deck.parameter) { req in
+            let deck = try req.parameters.next(Deck.self)
+            return deck
+        }
     }
     
     

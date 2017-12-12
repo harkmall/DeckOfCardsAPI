@@ -16,9 +16,10 @@ final class Deck: Model {
         return siblings()
     }
     
-    
     func makeRow() throws -> Row {
-        return Row()
+        var row = Row()
+        try row.set("shuffled", shuffled)
+        return row
     }
     
     init(row: Row) throws {
