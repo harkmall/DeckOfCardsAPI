@@ -6,5 +6,5 @@
   - Once done, make it so there are only ever 52 Cards in the DB and just reference them from different Decks
 - [x] Implement drawing cards
 - [x] Implement Partial Deck
-
+- [ ] Make a website for this
 
