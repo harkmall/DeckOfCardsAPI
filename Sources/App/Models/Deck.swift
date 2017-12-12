@@ -12,8 +12,8 @@ final class Deck: Model {
     let storage = Storage()
     
     var shuffled: Bool
-    var cards: Siblings<Deck, Card, Pivot<Deck, Card>> {
-        return siblings()
+    var cards: Children<Deck, Card> {
+        return children()
     }
     
     func makeRow() throws -> Row {
@@ -59,11 +59,7 @@ extension Deck: JSONConvertible {
         var json = JSON()
         try json.set("deckId", id)
         try json.set("shuffled", shuffled)
-        var cardsArray = try cards.all()
-        if (shuffled){
-            cardsArray.shuffle()
-        }
-        try json.set("cards", cardsArray.makeJSON())
+        try json.set("cards", try cards.all().makeJSON())
         return json
     }
 }
