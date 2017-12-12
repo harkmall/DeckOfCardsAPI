@@ -11,22 +11,10 @@ struct DeckController {
         
         let newDeckGroup = deckGroup.grouped("new")
         newDeckGroup.get("") { req in
-            return try createDeck(shuffled: false, fromRequest: req)
+            return try self.createDeck(shuffled: false, fromRequest: req)
         }
         newDeckGroup.get("shuffle") { req in
-            return try createDeck(shuffled: true, fromRequest: req)
-        }
-        
-        func createDeck(shuffled: Bool, fromRequest req: Request) throws -> Deck  {
-            let cards = req.data["cards"]?.string?.commaSeparatedArray()
-            let deck = Deck(shuffle: shuffled)
-            try deck.save()
-            var numDecks = 1
-            if let decks = req.data["deckCount"]?.int, decks > 0 {
-                numDecks = decks
-            }
-            try self.addCards(numDecks, toDeck: deck, partialDeckCards: cards)
-            return deck
+            return try self.createDeck(shuffled: true, fromRequest: req)
         }
         
         deckGroup.get(Deck.parameter) { req in
@@ -63,6 +51,25 @@ struct DeckController {
                 ]))
             
         }
+        
+        deckGroup.get(Deck.parameter, "shuffle") { req in
+            let deck = try req.parameters.next(Deck.self)
+            deck.shuffled = true
+            try deck.save()
+            return deck
+        }
+    }
+    
+    func createDeck(shuffled: Bool, fromRequest req: Request) throws -> Deck  {
+        let cards = req.data["cards"]?.string?.commaSeparatedArray()
+        let deck = Deck(shuffle: shuffled)
+        try deck.save()
+        var numDecks = 1
+        if let decks = req.data["deckCount"]?.int, decks > 0 {
+            numDecks = decks
+        }
+        try self.addCards(numDecks, toDeck: deck, partialDeckCards: cards)
+        return deck
     }
     
     
@@ -81,8 +88,8 @@ struct DeckController {
         
         if let partialDeck = partialDeckCards {
             for cardAbreviation in partialDeck {
-                guard let value = cardAbreviation.first,
-                    let suit = cardAbreviation.last,
+                guard let value = cardAbreviation.uppercased().first,
+                    let suit = cardAbreviation.uppercased().last,
                     let cardValue = cardNames[value],
                     let cardSuit = suitNames[suit] else {
                     throw Abort.init(.badRequest, reason: "\(cardAbreviation) is not a valid card abreviation")
