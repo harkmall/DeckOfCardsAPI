@@ -11,7 +11,7 @@ final class Card: Model {
     
     var value: String
     var suit: String
-    var deckId: Identifier?
+//    var deckId: Identifier?
     
     struct Keys {
         static let id = "id"
@@ -22,7 +22,6 @@ final class Card: Model {
     init(value: String, suit: String, deck: Deck) {
         self.value = value
         self.suit = suit
-        self.deckId = deck.id
     }
 
     // MARK: Fluent Serialization
@@ -30,14 +29,12 @@ final class Card: Model {
     init(row: Row) throws {
         value = try row.get(Card.Keys.value)
         suit = try row.get(Card.Keys.suit)
-        deckId = try row.get(Deck.foreignIdKey)
     }
 
     func makeRow() throws -> Row {
         var row = Row()
         try row.set(Card.Keys.value, value)
         try row.set(Card.Keys.suit, suit)
-        try row.set(Deck.foreignIdKey, deckId)
         return row
     }
 }
@@ -50,7 +47,6 @@ extension Card: Preparation {
             builder.id()
             builder.string(Card.Keys.value)
             builder.string(Card.Keys.suit)
-            builder.parent(Deck.self)
         }
     }
     static func revert(_ database: Database) throws {
@@ -78,7 +74,6 @@ extension Card: JSONConvertible {
         try json.set(Card.Keys.id, id)
         try json.set(Card.Keys.value, value)
         try json.set(Card.Keys.suit, suit)
-        try json.set("deckId", deckId)
         return json
     }
 }

@@ -13,13 +13,21 @@ struct DeckController {
         newDeckGroup.get("") { req in
             let deck = Deck(shuffle: false)
             try deck.save()
-            try self.addCards(req.data["deckCount"]?.int, toDeck: deck)
+            var numDecks = 1
+            if let decks = req.data["deckCount"]?.int, decks > 0 {
+                numDecks = decks
+            }
+            try self.addCards(numDecks, toDeck: deck)
             return deck
         }
         newDeckGroup.get("shuffle") { req in
             let deck = Deck(shuffle: true)
             try deck.save()
-            try self.addCards(req.data["deckCount"]?.int, toDeck: deck)
+            var numDecks = 1
+            if let decks = req.data["deckCount"]?.int, decks > 0 {
+                numDecks = decks
+            }
+            try self.addCards(numDecks, toDeck: deck)
             return deck
         }
         
@@ -27,18 +35,36 @@ struct DeckController {
             let deck = try req.parameters.next(Deck.self)
             return deck
         }
+        
+        deckGroup.get(Deck.parameter, "draw") { req in
+            let deck = try req.parameters.next(Deck.self)
+            var drawCards = 1
+            if let numCards = req.data["count"]?.int, numCards > 0 {
+                drawCards = numCards
+            }
+            
+            var drawnCards = [Card]()
+            for _ in 0..<drawCards {
+                if let card = try deck.cards.first() {
+                    drawnCards.append(card)
+                    try deck.cards.remove(card)
+                }
+            }
+            
+            return JSON(try Node(node: [
+                "cards": try drawnCards.makeJSON(),
+                "deckId": deck.id?.string ?? "",
+                "remaining": try deck.cards.count()
+                ]))
+            
+        }
     }
     
     
-    func addCards(_ numDecks: Int?, toDeck deck: Deck) throws {
-        var deckCount = 1
-        if let decks = numDecks {
-            deckCount = decks > 0 ? decks : 1
-        }
-        for x in 0..<(13 * deckCount)  {
+    func addCards(_ numDecks: Int, toDeck deck: Deck) throws {
+        for x in 0..<(13 * numDecks)  {
             for suit in suitNames {
                 let cardName = cardNames[x%13]
-                print(cardName + suit)
                 if let card = try Card.makeQuery().filter("suit", suit).filter("value", cardName).first() {
                     try deck.cards.add(card)
                     continue
