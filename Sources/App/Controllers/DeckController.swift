@@ -38,17 +38,24 @@ struct DeckController {
         
         deckGroup.get(Deck.parameter, "draw") { req in
             let deck = try req.parameters.next(Deck.self)
+            var deckCards = try deck.cards.all()
             var drawCards = 1
             if let numCards = req.data["count"]?.int, numCards > 0 {
                 drawCards = numCards
             }
             
+            if drawCards > deckCards.count {
+                throw Abort.init(.badRequest, reason: "Invalid number of cards to draw from this deck")
+            }
+            
             var drawnCards = [Card]()
+            if deck.shuffled {
+                deckCards.shuffle()
+            }
             for _ in 0..<drawCards {
-                if let card = try deck.cards.first() {
-                    drawnCards.append(card)
-                    try deck.cards.remove(card)
-                }
+                let card = deckCards.removeFirst()
+                drawnCards.append(card)
+                try deck.cards.remove(card)
             }
             
             return JSON(try Node(node: [
