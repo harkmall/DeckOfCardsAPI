@@ -3,31 +3,29 @@ import HTTP
 
 struct DeckController {
     
-    let cardNames = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"]
-    let suitNames = ["heart", "diamonds", "spades", "clubs"]
+    let cardNames: [Character: String] = ["2":"2", "3":"3", "4":"4", "5":"5", "6":"6", "7":"7", "8":"8", "9":"9", "0":"10", "J":"Jack", "Q":"Queen", "K":"King", "A":"Ace"]
+    let suitNames: [Character: String] = ["H":"heart", "D":"diamonds", "S":"spades", "C":"clubs"]
     
     func addRoutes(to drop: Droplet) {
         let deckGroup = drop.grouped("deck")
         
         let newDeckGroup = deckGroup.grouped("new")
         newDeckGroup.get("") { req in
-            let deck = Deck(shuffle: false)
-            try deck.save()
-            var numDecks = 1
-            if let decks = req.data["deckCount"]?.int, decks > 0 {
-                numDecks = decks
-            }
-            try self.addCards(numDecks, toDeck: deck)
-            return deck
+            return try createDeck(shuffled: false, fromRequest: req)
         }
         newDeckGroup.get("shuffle") { req in
-            let deck = Deck(shuffle: true)
+            return try createDeck(shuffled: true, fromRequest: req)
+        }
+        
+        func createDeck(shuffled: Bool, fromRequest req: Request) throws -> Deck  {
+            let cards = req.data["cards"]?.string?.commaSeparatedArray()
+            let deck = Deck(shuffle: shuffled)
             try deck.save()
             var numDecks = 1
             if let decks = req.data["deckCount"]?.int, decks > 0 {
                 numDecks = decks
             }
-            try self.addCards(numDecks, toDeck: deck)
+            try self.addCards(numDecks, toDeck: deck, partialDeckCards: cards)
             return deck
         }
         
@@ -68,18 +66,38 @@ struct DeckController {
     }
     
     
-    func addCards(_ numDecks: Int, toDeck deck: Deck) throws {
-        for x in 0..<(13 * numDecks)  {
-            for suit in suitNames {
-                let cardName = cardNames[x%13]
-                if let card = try Card.makeQuery().filter("suit", suit).filter("value", cardName).first() {
-                    try deck.cards.add(card)
-                    continue
-                }
-                let newCard = Card(value: cardName, suit: suit, deck: deck)
+    func addCards(_ numDecks: Int, toDeck deck: Deck, partialDeckCards: [String]? = nil) throws {
+        
+        func addCard(withValue value: String, suit:String, toDeck deck:Deck) throws {
+            if let card = try Card.makeQuery().filter("suit", suit).filter("value", value).first() {
+                try deck.cards.add(card)
+            }
+            else {
+                let newCard = Card(value: value, suit: suit, deck: deck)
                 try newCard.save()
                 try deck.cards.add(newCard)
             }
         }
+        
+        if let partialDeck = partialDeckCards {
+            for cardAbreviation in partialDeck {
+                guard let value = cardAbreviation.first,
+                    let suit = cardAbreviation.last,
+                    let cardValue = cardNames[value],
+                    let cardSuit = suitNames[suit] else {
+                    throw Abort.init(.badRequest, reason: "\(cardAbreviation) is not a valid card abreviation")
+                }
+                try addCard(withValue: cardValue, suit: cardSuit, toDeck: deck)
+            }
+        }
+        else{
+            for x in 0..<(13 * numDecks)  {
+                for suit in suitNames.values {
+                    let cardName = cardNames.values.array[x%13]
+                    try addCard(withValue: cardName, suit: suit, toDeck: deck)
+                }
+            }
+        }
     }
+    
 }
