@@ -45,7 +45,7 @@ extension Deck: Preparation {
             builder.bool("shuffled")
         }
     }
-    
+
     static func revert(_ database: Database) throws {
         try database.delete(self)
     }
@@ -64,7 +64,6 @@ extension Deck: JSONConvertible {
         try json.set("shuffled", shuffled)
         try json.set("remaining", try cards.all().count)
         try json.set("cards", try cards.all().makeJSON())
-//        try json.set("piles", try piles.all().makeJSON())
         
         var pileJSON = JSON()
         for pile in try piles.all() {
