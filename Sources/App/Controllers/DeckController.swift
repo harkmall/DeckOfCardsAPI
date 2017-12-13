@@ -53,7 +53,6 @@ struct DeckController {
             
         }
         
-        //FIXME: This is now broken
         deckGroup.get(Deck.parameter, "shuffle") { req in
             let deck = try req.parameters.next(Deck.self)
             deck.shuffled = true
@@ -69,6 +68,38 @@ struct DeckController {
             try self.addCards(cardsInDeck, toDeck: deck)
             return deck
         }
+        
+        deckGroup.get(Deck.parameter, "pile", Pile.parameter, "add") { req in
+            let deck = try req.parameters.next(Deck.self)
+            guard let name = req.parameters["pile_Id"]?.string, let cards = req.data["cards"]?.string?.commaSeparatedArray() else {
+                throw Abort.badRequest
+            }
+            
+            var pile: Pile
+            if let existingPile = try Pile.makeQuery().filter("name", .equals, name).first() {
+                pile = existingPile
+            }
+            else{
+                pile = Pile(name: name, deck: deck)
+                try pile.save()
+            }
+            
+            let deckCards = try deck.cards.all()
+            
+            guard Set(cards).isSubset(of: Set(deckCards.map{ $0.code }) ) else {
+                throw Abort.init(.badRequest, reason: "Can't add cards to a pile that aren't in the deck!")
+            }
+            
+            let cardsToMoveToPile = deckCards.filter { cards.contains($0.code) }
+            for card in cardsToMoveToPile {
+                card.deckId = nil
+                card.pileId = pile.id
+                try card.save()
+            }
+            
+            return deck
+        }
+        
     }
     
     func createDeck(shuffled: Bool, fromRequest req: Request) throws -> Deck  {
@@ -113,3 +144,6 @@ struct DeckController {
     }
     
 }
+
+extension DeckController: EmptyInitializable { }
+

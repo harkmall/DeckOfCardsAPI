@@ -15,6 +15,9 @@ final class Deck: Model {
     var cards: Children<Deck, Card> {
         return children()
     }
+    var piles: Children<Deck, Pile> {
+        return children()
+    }
     
     func makeRow() throws -> Row {
         var row = Row()
@@ -59,12 +62,12 @@ extension Deck: JSONConvertible {
         var json = JSON()
         try json.set("deckId", id)
         try json.set("shuffled", shuffled)
+        try json.set("remaining", try cards.all().count)
         try json.set("cards", try cards.all().makeJSON())
+        try json.set("piles", try piles.all().makeJSON())
         return json
     }
 }
-
-extension DeckController: EmptyInitializable { }
 
 extension Array {
     mutating func shuffle() {

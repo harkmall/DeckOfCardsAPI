@@ -12,6 +12,7 @@ final class Card: Model {
     var value: String
     var suit: String
     var deckId: Identifier?
+    var pileId: Identifier?
     var code: String
     
     struct Keys {
@@ -21,15 +22,22 @@ final class Card: Model {
         static let code = "code"
     }
 
-    init(value: String, suit: String, deck: Deck) {
+    init(value: String, suit: String, deck: Deck? = nil, pile: Pile? = nil) {
         self.value = value
         self.suit = suit
-        self.deckId = deck.id
+        self.deckId = deck?.id
+        self.pileId = pile?.id
         var v = value.uppercased().first!
         if v == "1" {
             v = "0"
         }
         self.code = "\(v)\(suit.uppercased().first!)"
+    }
+    
+    init(fromAPIJSON: JSON) {
+        self.value = ""
+        self.suit = ""
+        self.code = ""
     }
 
     // MARK: Fluent Serialization
@@ -38,6 +46,7 @@ final class Card: Model {
         value = try row.get(Card.Keys.value)
         suit = try row.get(Card.Keys.suit)
         deckId = try row.get(Deck.foreignIdKey)
+        pileId = try row.get(Pile.foreignIdKey)
         code = try row.get(Card.Keys.code)
     }
 
@@ -46,6 +55,7 @@ final class Card: Model {
         try row.set(Card.Keys.value, value)
         try row.set(Card.Keys.suit, suit)
         try row.set(Deck.foreignIdKey, deckId)
+        try row.set(Pile.foreignIdKey, pileId)
         try row.set(Card.Keys.code, code)
         return row
     }
@@ -60,6 +70,7 @@ extension Card: Preparation {
             builder.string(Card.Keys.value)
             builder.string(Card.Keys.suit)
             builder.parent(Deck.self)
+            builder.parent(Pile.self)
         }
     }
     static func revert(_ database: Database) throws {
@@ -71,15 +82,7 @@ extension Card: Preparation {
 
 extension Card: JSONConvertible {
     convenience init(json: JSON) throws {
-        let deckId: Identifier = try json.get("userId")
-        guard let deck = try Deck.find(deckId) else {
-            throw Abort.badRequest
-        }
-        self.init(
-            value: try json.get(Card.Keys.value),
-            suit: try json.get(Card.Keys.suit),
-            deck: deck
-        )
+        self.init(fromAPIJSON: json)
     }
     
     func makeJSON() throws -> JSON {
