@@ -110,20 +110,6 @@ struct DeckController {
             }
             try addCard(withValue: cardValue, suit: cardSuit, toDeck: deck)
         }
-//        else{
-//            var cardAbreviations = cards
-//            let numCards = cardAbreviations.count
-//            if deck.shuffled {
-//                cardAbreviations.shuffle()
-//            }
-//            for x in 0..<(numCards * numDecks) {
-//                let value = cardAbreviations[x%numCards].uppercased().first!
-//                let suit = cardAbreviations[x%numCards].uppercased().last!
-//                let cardValue = cardNames[value]!
-//                let cardSuit = suitNames[suit]!
-//                try addCard(withValue: cardValue, suit: cardSuit, toDeck: deck)
-//            }
-//        }
     }
     
 }
