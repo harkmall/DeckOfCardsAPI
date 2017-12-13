@@ -58,58 +58,72 @@ struct DeckController {
             let deck = try req.parameters.next(Deck.self)
             deck.shuffled = true
             try deck.save()
+            
+            let cards = try deck.cards.all()
+            let cardsInDeck = cards.map { $0.code }
+            
+            for card in cards {
+                try card.delete()
+            }
+            
+            try self.addCards(cardsInDeck, toDeck: deck)
             return deck
         }
     }
     
     func createDeck(shuffled: Bool, fromRequest req: Request) throws -> Deck  {
-        let cards = req.data["cards"]?.string?.commaSeparatedArray()
+        var cardsToAdd = cards
+        if let cards = req.data["cards"]?.string?.commaSeparatedArray() {
+            cardsToAdd = cards
+        }
         let deck = Deck(shuffle: shuffled)
         try deck.save()
-        var numDecks = 1
-        if let decks = req.data["deckCount"]?.int, decks > 0 {
-            numDecks = decks
+        if let decks = req.data["deckCount"]?.int, decks > 1 {
+            var multiDeckCards = [String]()
+            
+            for x in 0..<(cardsToAdd.count * decks) {
+                multiDeckCards.append(cardsToAdd[x%cardsToAdd.count])
+            }
+            cardsToAdd = multiDeckCards
         }
-        try self.addCards(numDecks, toDeck: deck, partialDeckCards: cards)
+        try self.addCards(cardsToAdd, toDeck: deck)
         return deck
     }
     
+    func addCard(withValue value: String, suit:String, toDeck deck:Deck) throws {
+        let newCard = Card(value: value, suit: suit, deck: deck)
+        try newCard.save()
+    }
     
-    func addCards(_ numDecks: Int, toDeck deck: Deck, partialDeckCards: [String]? = nil) throws {
+    func addCards(_ cards: [String], toDeck deck: Deck) throws {
         
-        func addCard(withValue value: String, suit:String, toDeck deck:Deck) throws {
-            let newCard = Card(value: value, suit: suit, deck: deck)
-            try newCard.save()
+        var cardsToAdd = cards
+        if deck.shuffled {
+            cardsToAdd.shuffle()
         }
-        
-        if var partialDeck = partialDeckCards {
-            if deck.shuffled {
-                partialDeck.shuffle()
-            }
-            for cardAbreviation in partialDeck {
-                guard let value = cardAbreviation.uppercased().first,
-                    let suit = cardAbreviation.uppercased().last,
-                    let cardValue = cardNames[value],
-                    let cardSuit = suitNames[suit] else {
+        for cardAbreviation in cardsToAdd {
+            guard let value = cardAbreviation.uppercased().first,
+                let suit = cardAbreviation.uppercased().last,
+                let cardValue = cardNames[value],
+                let cardSuit = suitNames[suit] else {
                     throw Abort.init(.badRequest, reason: "\(cardAbreviation) is not a valid card abreviation")
-                }
-                try addCard(withValue: cardValue, suit: cardSuit, toDeck: deck)
             }
+            try addCard(withValue: cardValue, suit: cardSuit, toDeck: deck)
         }
-        else{
-            var cardAbreviations = cards
-            let numCards = cardAbreviations.count
-            if deck.shuffled {
-                cardAbreviations.shuffle()
-            }
-            for x in 0..<(numCards * numDecks) {
-                let value = cardAbreviations[x%numCards].uppercased().first!
-                let suit = cardAbreviations[x%numCards].uppercased().last!
-                let cardValue = cardNames[value]!
-                let cardSuit = suitNames[suit]!
-                try addCard(withValue: cardValue, suit: cardSuit, toDeck: deck)
-            }
-        }
+//        else{
+//            var cardAbreviations = cards
+//            let numCards = cardAbreviations.count
+//            if deck.shuffled {
+//                cardAbreviations.shuffle()
+//            }
+//            for x in 0..<(numCards * numDecks) {
+//                let value = cardAbreviations[x%numCards].uppercased().first!
+//                let suit = cardAbreviations[x%numCards].uppercased().last!
+//                let cardValue = cardNames[value]!
+//                let cardSuit = suitNames[suit]!
+//                try addCard(withValue: cardValue, suit: cardSuit, toDeck: deck)
+//            }
+//        }
     }
     
 }
