@@ -22,6 +22,5 @@ extension Config {
     private func setupPreparations() throws {
         preparations.append(Card.self)
         preparations.append(Deck.self)
-        preparations.append(Pivot<Deck, Card>.self)
     }
 }
