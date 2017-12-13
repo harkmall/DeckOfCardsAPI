@@ -1,4 +1,21 @@
 # DeckOfCardsAPI
+[![Twitter: @KrauseFx](https://img.shields.io/badge/contact-@SoftieEng-blue.svg?style=flat)](https://twitter.com/softieeng)
+[![License](https://img.shields.io/badge/license-BSD-green.svg?style=flat)](https://github.com/harkmall/MHSegmentedControl/blob/master/LICENSE)
+
+## How to run this
+
+This runs on [Vapor](https://github.com/vapor/vapor) so you'll have to have that all set up before you do anything.
+
+Once you've got that done, run a quick
+
+```
+vapor update
+vapor build
+vapor xcode -y
+```
+To update the swift packages, build the project, generate the xcode project and open it. 😅 
+
+
 
 ### //TODO
 - [x] Implement Shuffle (Shuffle doesn't maintain shuffled state, every time you request the deck again, it will get reshuffled. Probably not good, will look into that later.)
