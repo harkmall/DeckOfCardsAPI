@@ -64,7 +64,17 @@ extension Deck: JSONConvertible {
         try json.set("shuffled", shuffled)
         try json.set("remaining", try cards.all().count)
         try json.set("cards", try cards.all().makeJSON())
-        try json.set("piles", try piles.all().makeJSON())
+//        try json.set("piles", try piles.all().makeJSON())
+        
+        var pileJSON = JSON()
+        for pile in try piles.all() {
+            var innerJSON = JSON()
+            try innerJSON.set("remaining", pile.cards.all().count)
+            try innerJSON.set("cards", pile.cards.all().makeJSON())
+            try pileJSON.set(pile.name, innerJSON)
+        }
+        try json.set("piles", pileJSON)
+        
         return json
     }
 }

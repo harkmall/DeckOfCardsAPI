@@ -76,7 +76,7 @@ struct DeckController {
             }
             
             var pile: Pile
-            if let existingPile = try Pile.makeQuery().filter("name", .equals, name).first() {
+            if let existingPile = try deck.piles.filter("name", .equals, name).first() {
                 pile = existingPile
             }
             else{
@@ -98,6 +98,72 @@ struct DeckController {
             }
             
             return deck
+        }
+        
+        deckGroup.get(Deck.parameter, "pile", Pile.parameter, "draw") { req in
+            let deck = try req.parameters.next(Deck.self)
+            guard let name = req.parameters["pile_Id"]?.string else {
+                throw Abort.badRequest
+            }
+            
+            guard let pile = try deck.piles.filter("name", .equals, name).first() else {
+                throw Abort.init(.notFound, reason: "Pile with the name \(name) doesn't exist on this deck." )
+            }
+            
+            var drawnCards = [Card]()
+            var pileCards = try pile.cards.all()
+            
+            if let cards = req.data["cards"]?.string?.commaSeparatedArray() {
+                guard Set(cards).isSubset(of: Set(pileCards.map{ $0.code }) ) else {
+                    throw Abort.init(.badRequest, reason: "Can't draw cards from a pile that aren't in the pile!")
+                }
+                for card in pileCards.filter({ cards.contains($0.code) }) {
+                    drawnCards.append(card)
+                    card.pileId = nil
+                    try card.save()
+                }
+            }
+            else {
+                var drawCount = 1
+                if let count = req.data["count"]?.int, count > 1 {
+                    drawCount = count
+                }
+                guard drawCount <=  pileCards.count else {
+                    throw Abort.init(.badRequest, reason: "Can't draw \(drawCount) cards from a pile that only has \(pileCards.count) cards!")
+                }
+                
+                for _ in 0..<drawCount  {
+                    let card = pileCards.removeFirst()
+                    drawnCards.append(card)
+                    card.pileId = nil
+                    try card.save()
+                }
+            }
+            
+            return JSON(try Node(node:[
+                "deckId": (deck.id?.string)!,
+                "cards": drawnCards.makeJSON()
+                ]))
+        }
+        
+        deckGroup.get(Deck.parameter, "pile", Pile.parameter, "draw", "bottom") { req in
+            let deck = try req.parameters.next(Deck.self)
+            guard let name = req.parameters["pile_Id"]?.string else {
+                throw Abort.badRequest
+            }
+            
+            guard let pile = try deck.piles.filter("name", .equals, name).first() else {
+                throw Abort.init(.notFound, reason: "Pile with the name \(name) doesn't exist on this deck." )
+            }
+            var pileCards = try pile.cards.all()
+            let bottomCard = pileCards.removeLast()
+            bottomCard.pileId = nil
+            try bottomCard.save()
+            
+            return JSON(try Node(node:[
+                "deckId": (deck.id?.string)!,
+                "cards": [try bottomCard.makeJSON()]
+                ]))
         }
         
     }
