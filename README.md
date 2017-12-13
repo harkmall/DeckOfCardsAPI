@@ -9,5 +9,7 @@
 Decided against this again, was too hard to maintain the shuffled order of a deck. So every deck that gets created creates new objects for each of its cards. Not ideal, but ¯\\_(ツ)_/¯
 - [x] Implement drawing cards
 - [x] Implement Partial Deck
+- [x] Implement Piles
+- [x] Implement drawing from piles
 - [ ] Make a website for this
 
