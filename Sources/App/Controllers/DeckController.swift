@@ -140,10 +140,7 @@ struct DeckController {
                 }
             }
             
-            return JSON(try Node(node:[
-                "deckId": (deck.id?.string)!,
-                "cards": drawnCards.makeJSON()
-                ]))
+            return try self.pileJSON(fromDeck: deck, cards: drawnCards)
         }
         
         deckGroup.get(Deck.parameter, "pile", Pile.parameter, "draw", "bottom") { req in
@@ -160,12 +157,16 @@ struct DeckController {
             bottomCard.pileId = nil
             try bottomCard.save()
             
-            return JSON(try Node(node:[
-                "deckId": (deck.id?.string)!,
-                "cards": [try bottomCard.makeJSON()]
-                ]))
+            return try self.pileJSON(fromDeck: deck, cards: [bottomCard])
         }
         
+    }
+    
+    func pileJSON(fromDeck deck:Deck, cards: [Card]) throws -> JSON {
+        return JSON(try Node(node:[
+            "deckId": (deck.id?.string)!,
+            "cards": try cards.makeJSON()
+            ]))
     }
     
     func createDeck(shuffled: Bool, fromRequest req: Request) throws -> Deck  {
@@ -187,11 +188,6 @@ struct DeckController {
         return deck
     }
     
-    func addCard(withValue value: String, suit:String, toDeck deck:Deck) throws {
-        let newCard = Card(value: value, suit: suit, deck: deck)
-        try newCard.save()
-    }
-    
     func addCards(_ cards: [String], toDeck deck: Deck) throws {
         
         var cardsToAdd = cards
@@ -205,7 +201,8 @@ struct DeckController {
                 let cardSuit = suitNames[suit] else {
                     throw Abort.init(.badRequest, reason: "\(cardAbreviation) is not a valid card abreviation")
             }
-            try addCard(withValue: cardValue, suit: cardSuit, toDeck: deck)
+            let newCard = Card(value: cardValue, suit: cardSuit, deck: deck)
+            try newCard.save()
         }
     }
     
