@@ -5,9 +5,6 @@ import HTTP
 final class Card: Model {
     
     let storage = Storage()
-//    static let idType: IdentifierType = .custom(String)
-    
-    // MARK: Properties and database keys
     
     var value: String
     var suit: String
@@ -98,4 +95,3 @@ extension Card: JSONConvertible {
 // MARK: HTTP
 
 extension Card: ResponseRepresentable { }
-
