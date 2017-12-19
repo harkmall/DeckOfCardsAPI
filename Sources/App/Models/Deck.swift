@@ -7,6 +7,7 @@
 
 import Vapor
 import FluentProvider
+import Foundation
 
 final class Deck: Model {
     let storage = Storage()
