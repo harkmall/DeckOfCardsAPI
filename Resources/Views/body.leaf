@@ -1,0 +1,331 @@
+<div class="container">
+    <div class="col s-12">
+        <h1 class="teal-text text-accent-3">Deck of Cards API</h1>
+    </div>
+
+    <div class="card-panel red lighten-1">
+        <p class="grey-text text-lighten-2">Before you go any furthur, all credit for this goes to Chase Roberts, I'm just doing it to learn.
+            <br>This is a clone of his 
+                <a class="grey-text text-lighten-2" href="http://deckofcardsapi.com/">http://deckofcardsapi.com/</a> it works pretty much the same way, but in swift.
+            <br>
+            <br>Find Chase here:
+            <a class="grey-text text-lighten-2" href="https://twitter.com/crobertsbmw">
+                <i class="fa fa-twitter fa-2x" aria-hidden="true"></i></a>
+                <a class="grey-text text-lighten-2" href="https://github.com/crobertsbmw/">
+                <i class="fa fa-github fa-2x" aria-hidden="true"></i></a>
+        </p>
+    </div>
+
+    <div class="section">
+        <h4 class="grey-text text-lighten-2">Make a new deck</h4>
+        <div class="col s12">
+            <div class="card-panel grey lighten-2">
+                <code>http://localhost:1337/deck/new/?deckCount=2</code>
+            </div>
+            <blockquote>
+                <p class="grey-text text-lighten-1">Add a
+                    <code>/shuffle</code> to return a shuffled deck
+                    <br> Add the
+                    <code>deckCount</code> parameter to specify that you want more than one deck's worth of cards in your deck
+                </p>
+            </blockquote>
+        </div>
+        <h5 class="grey-text text-lighten-2">Response</h5>
+        <div class="col s12">
+            <div class="card-panel grey lighten-2">
+                <pre>
+{
+    "shuffled": false,
+    "deckId": "oid:5a3960788ef63d0d0489c42f",
+    "piles": {},
+    "cards": [
+        {
+            "value": "Ace",
+            "suit": "spades",
+            "id": "oid:5a3960788ef63d0d0589c42f",
+            "code": "AS"
+        },
+        ...
+    ],
+    "remaining": 52
+}</pre>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="section">
+        <h4 class="grey-text text-lighten-2">Draw Cards</h4>
+        <div class="col s12">
+            <div class="card-panel grey lighten-2">
+                <code>http://localhost:1337/deck/&lt;deckId&gt;/draw/?count=2</code>
+            </div>
+            <blockquote>
+                <p class="grey-text text-lighten-1">Be sure to replace the &lt;deckId&gt; with a valid deckId
+                    <br> Add the
+                    <code>count</code> parameter to specify how many cards you want to draw out of the deck
+                </p>
+            </blockquote>
+        </div>
+        <h5 class="grey-text text-lighten-2">Response</h5>
+        <div class="col s12">
+            <div class="card-panel grey lighten-2">
+                <pre>
+{
+    "cards": [
+        {
+            "value": "Ace",
+            "suit": "spades",
+            "id": "oid:5a32a4967db3df68570885e0",
+            "code": "AS"
+        },
+        {
+            "value": "4",
+            "suit": "clubs",
+            "id": "oid:5a32a4967db3df68580885e0",
+            "code": "4C"
+        }
+    ],
+    "deckId": "oid:5a32a43ae4009af3e8f651b8",
+    "remaining": 50
+}</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h4 class="grey-text text-lighten-2">Reshuffle a deck</h4>
+        <div class="col s12">
+            <div class="card-panel grey lighten-2">
+                <code>http://localhost:1337/deck/&lt;deckId&gt;/shuffle</code>
+            </div>
+            <blockquote>
+                <p class="grey-text text-lighten-1">Be sure to replace the &lt;deckId&gt; with a valid deckId</p>
+            </blockquote>
+        </div>
+        <h5 class="grey-text text-lighten-2">Response</h5>
+        <div class="col s12">
+            <div class="card-panel grey lighten-2">
+                <pre>
+{
+    "shuffled": false,
+    "deckId": "oid:5a3960788ef63d0d0489c42f",
+    "piles": {},
+    "cards": [
+        {
+            "value": "Ace",
+            "suit": "spades",
+            "id": "oid:5a3960788ef63d0d0589c42f",
+            "code": "AS"
+        },
+        ...
+    ],
+    "remaining": 52
+}</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h4 class="grey-text text-lighten-2">Create a partial deck</h4>
+        <div class="col s12">
+            <div class="card-panel grey lighten-2">
+                <code>http://localhost:1337/deck/new?cards=AH,AS,AD,AC,KH,KS,KD,KH</code>
+            </div>
+            <blockquote>
+                <p class="grey-text text-lighten-1">If you want a partial deck, just add the
+                    <code>cards</code> parameter. Separate the cards with commas, each card is a two character case-insensitive
+                    string:
+                    <br>
+                    <ol class="grey-text text-lighten-1">
+                        <li>Value of the card: A, K, Q, J, 1 (for 10), 9, 8, 7, 6, 5, 4, 3, 2</li>
+                        <li>Suit: D, C, H, S</li>
+                    </ol>
+                </p>
+            </blockquote>
+        </div>
+        <h5 class="grey-text text-lighten-2">Response</h5>
+        <div class="col s12">
+            <div class="card-panel grey lighten-2">
+                <pre>
+{
+    "shuffled": true,
+    "deckId": "oid:5a396f80fdae2142e7d122cb",
+    "piles": {},
+    "cards": [
+        {
+            "value": "Ace",
+            "suit": "hearts",
+            "id": "oid:5a396f9afdae2142f1d122cb",
+            "code": "AH"
+        },
+        {
+            "value": "Ace",
+            "suit": "spades",
+            "id": "oid:5a396f9afdae2142f2d122cb",
+            "code": "AS"
+        },
+        {
+            "value": "Ace",
+            "suit": "diamonds",
+            "id": "oid:5a396f9afdae2142f3d122cb",
+            "code": "AD"
+        },
+        {
+            "value": "Ace",
+            "suit": "clubs",
+            "id": "oid:5a396f9afdae2142f4d122cb",
+            "code": "AC"
+        },
+        {
+            "value": "King",
+            "suit": "hearts",
+            "id": "oid:5a396f9afdae2142f5d122cb",
+            "code": "KH"
+        },
+        {
+            "value": "King",
+            "suit": "spades",
+            "id": "oid:5a396f9afdae2142f6d122cb",
+            "code": "KS"
+        },
+        {
+            "value": "King",
+            "suit": "diamonds",
+            "id": "oid:5a396f9afdae2142f7d122cb",
+            "code": "KD"
+        },
+        {
+            "value": "King",
+            "suit": "hearts",
+            "id": "oid:5a396f9afdae2142f8d122cb",
+            "code": "KH"
+        }
+    ],
+    "remaining": 8
+}</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h4 class="grey-text text-lighten-2">Add to piles</h4>
+        <div class="col s12">
+            <div class="card-panel grey lighten-2">
+                <code>http://localhost:1337/deck/&lt;deckId&gt;/pile/&lt;pileName&gt;/add?cards=AH</code>
+            </div>
+            <blockquote>
+                <p class="grey-text text-lighten-1">
+                    Be sure to replace the &lt;deckId&gt; with a valid deckId. Piles are created when you make the request so just add a pile
+                    name and it will get created.
+                </p>
+            </blockquote>
+        </div>
+        <h5 class="grey-text text-lighten-2">Response</h5>
+        <div class="col s12">
+            <div class="card-panel grey lighten-2">
+                <pre>
+{
+    "shuffled": false,
+    "deckId": "oid:5a396f9afdae2142f0d122cb",
+    "piles": {
+        "discard": {
+            "cards": [
+                {
+                    "value": "Ace",
+                    "suit": "hearts",
+                    "id": "oid:5a396f9afdae2142f1d122cb",
+                    "code": "AH"
+                }
+            ],
+            "remaining": 1
+        }
+    },
+    "cards": [
+        {
+            "value": "Ace",
+            "suit": "spades",
+            "id": "oid:5a396f9afdae2142f2d122cb",
+            "code": "AS"
+        },
+        {
+            "value": "Ace",
+            "suit": "diamonds",
+            "id": "oid:5a396f9afdae2142f3d122cb",
+            "code": "AD"
+        },
+        {
+            "value": "Ace",
+            "suit": "clubs",
+            "id": "oid:5a396f9afdae2142f4d122cb",
+            "code": "AC"
+        },
+        {
+            "value": "King",
+            "suit": "hearts",
+            "id": "oid:5a396f9afdae2142f5d122cb",
+            "code": "KH"
+        },
+        {
+            "value": "King",
+            "suit": "spades",
+            "id": "oid:5a396f9afdae2142f6d122cb",
+            "code": "KS"
+        },
+        {
+            "value": "King",
+            "suit": "diamonds",
+            "id": "oid:5a396f9afdae2142f7d122cb",
+            "code": "KD"
+        },
+        {
+            "value": "King",
+            "suit": "hearts",
+            "id": "oid:5a396f9afdae2142f8d122cb",
+            "code": "KH"
+        }
+    ],
+    "remaining": 7
+}</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h4 class="grey-text text-lighten-2">Draw from piles</h4>
+        <div class="col s12">
+            <div class="card-panel grey lighten-2">
+                <code>http://localhost:1337/deck/&lt;deckId&gt;/pile/&lt;pileName&gt;/draw?cards=AH
+                    <br> http://localhost:1337/deck/&lt;deckId&gt;/pile/&lt;pileName&gt;/draw?count=2
+                    <br> http://localhost:1337/deck/&lt;deckId&gt;/pile/&lt;pileName&gt;/bottom
+                </code>
+            </div>
+            <blockquote>
+                <p class="grey-text text-lighten-1">
+                    Be sure to replace the &lt;deckId&gt; with a valid deckId and &lt;pileName&gt; with a pile that exists on this deck.
+                    <br>The piles are stacks so you can specify a specific card to draw, a number of cards to draw, or whether
+                    you want to draw from the bottom of the pile.
+                </p>
+            </blockquote>
+        </div>
+        <h5 class="grey-text text-lighten-2">Response</h5>
+        <div class="col s12">
+            <div class="card-panel grey lighten-2">
+                <pre>
+{
+    "cards": [
+        {
+            "value": "Ace",
+            "suit": "hearts",
+            "id": "oid:5a396f9afdae2142f1d122cb",
+            "code": "AH"
+        }
+    ],
+    "deckId": "oid:5a396f9afdae2142f0d122cb"
+}</pre>
+            </div>
+        </div>
+    </div>
+
+    #embed("footer")
+</div>
