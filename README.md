@@ -2,6 +2,10 @@
 [![Twitter: @KrauseFx](https://img.shields.io/badge/contact-@SoftieEng-blue.svg?style=flat)](https://twitter.com/softieeng)
 [![License](https://img.shields.io/badge/license-BSD-green.svg?style=flat)](https://github.com/harkmall/MHSegmentedControl/blob/master/LICENSE)
 
+## It's ALIVE
+
+The api is alive and running: [https://deckofcards.vapor.cloud/](https://deckofcards.vapor.cloud/) 🤘🏻
+
 ## How to run this
 
 This runs on [Vapor](https://github.com/vapor/vapor) so you'll have to have that all set up before you do anything.
