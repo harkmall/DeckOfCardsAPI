@@ -192,7 +192,7 @@ struct DeckController {
         
         var cardsToAdd = cards
         if deck.shuffled {
-            try cardsToAdd.shuffle()
+            cardsToAdd.shuffle()
         }
         for cardAbreviation in cardsToAdd {
             guard let value = cardAbreviation.uppercased().first,
