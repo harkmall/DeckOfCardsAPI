@@ -38,5 +38,6 @@ Decided against this again, was too hard to maintain the shuffled order of a dec
 - [x] Implement Partial Deck
 - [x] Implement Piles
 - [x] Implement drawing from piles
-- [ ] Make a website for this
+- [x] Make a website for this
+- [ ] Figure out how to host this on vapor without having my DB credentials public
 
