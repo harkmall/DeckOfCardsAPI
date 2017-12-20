@@ -20,7 +20,7 @@
         <h4 class="grey-text text-lighten-2">Make a new deck</h4>
         <div class="col s12">
             <div class="card-panel grey lighten-2">
-                <code>http://localhost:1337/deck/new/?deckCount=2</code>
+                <code>https://deckofcards.vapor.cloud/deck/new/?deckCount=2</code>
             </div>
             <blockquote>
                 <p class="grey-text text-lighten-1">Add a
@@ -58,7 +58,7 @@
         <h4 class="grey-text text-lighten-2">Draw Cards</h4>
         <div class="col s12">
             <div class="card-panel grey lighten-2">
-                <code>http://localhost:1337/deck/&lt;deckId&gt;/draw/?count=2</code>
+                <code>https://deckofcards.vapor.cloud/deck/&lt;deckId&gt;/draw/?count=2</code>
             </div>
             <blockquote>
                 <p class="grey-text text-lighten-1">Be sure to replace the &lt;deckId&gt; with a valid deckId
@@ -97,7 +97,7 @@
         <h4 class="grey-text text-lighten-2">Reshuffle a deck</h4>
         <div class="col s12">
             <div class="card-panel grey lighten-2">
-                <code>http://localhost:1337/deck/&lt;deckId&gt;/shuffle</code>
+                <code>https://deckofcards.vapor.cloud/deck/&lt;deckId&gt;/shuffle</code>
             </div>
             <blockquote>
                 <p class="grey-text text-lighten-1">Be sure to replace the &lt;deckId&gt; with a valid deckId</p>
@@ -130,7 +130,7 @@
         <h4 class="grey-text text-lighten-2">Create a partial deck</h4>
         <div class="col s12">
             <div class="card-panel grey lighten-2">
-                <code>http://localhost:1337/deck/new?cards=AH,AS,AD,AC,KH,KS,KD,KH</code>
+                <code>https://deckofcards.vapor.cloud/deck/new?cards=AH,AS,AD,AC,KH,KS,KD,KH</code>
             </div>
             <blockquote>
                 <p class="grey-text text-lighten-1">If you want a partial deck, just add the
@@ -212,7 +212,7 @@
         <h4 class="grey-text text-lighten-2">Add to piles</h4>
         <div class="col s12">
             <div class="card-panel grey lighten-2">
-                <code>http://localhost:1337/deck/&lt;deckId&gt;/pile/&lt;pileName&gt;/add?cards=AH</code>
+                <code>https://deckofcards.vapor.cloud/deck/&lt;deckId&gt;/pile/&lt;pileName&gt;/add?cards=AH</code>
             </div>
             <blockquote>
                 <p class="grey-text text-lighten-1">
@@ -295,9 +295,9 @@
         <h4 class="grey-text text-lighten-2">Draw from piles</h4>
         <div class="col s12">
             <div class="card-panel grey lighten-2">
-                <code>http://localhost:1337/deck/&lt;deckId&gt;/pile/&lt;pileName&gt;/draw?cards=AH
-                    <br> http://localhost:1337/deck/&lt;deckId&gt;/pile/&lt;pileName&gt;/draw?count=2
-                    <br> http://localhost:1337/deck/&lt;deckId&gt;/pile/&lt;pileName&gt;/bottom
+                <code>https://deckofcards.vapor.cloud/deck/&lt;deckId&gt;/pile/&lt;pileName&gt;/draw?cards=AH
+                    <br> https://deckofcards.vapor.cloud/deck/&lt;deckId&gt;/pile/&lt;pileName&gt;/draw?count=2
+                    <br> https://deckofcards.vapor.cloud/deck/&lt;deckId&gt;/pile/&lt;pileName&gt;/bottom
                 </code>
             </div>
             <blockquote>
