@@ -17,10 +17,6 @@ import App
 /// .run() runs the Droplet's commands, 
 /// if no command is given, it will default to "serve"
 
-#if os(Linux)
-    srandom(UInt32(time(nil)))
-#endif
-
 let config = try Config()
 try config.setup()
 
