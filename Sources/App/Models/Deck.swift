@@ -8,7 +8,7 @@
 import Vapor
 import FluentProvider
 import Foundation
-
+import Random
 
 final class Deck: Model {
     let storage = Storage()
@@ -83,7 +83,7 @@ extension Deck: JSONConvertible {
 extension Array {
     mutating func shuffle() {
         for i in 0 ..< (count - 1) {
-            let j = Int(arc4random_uniform(UInt32(count - i))) + i
+            let j = Random.makeRandom(min: 0, max: count-1)
             swapAt(i, j)
         }
     }
