@@ -39,5 +39,5 @@ Decided against this again, was too hard to maintain the shuffled order of a dec
 - [x] Implement Piles
 - [x] Implement drawing from piles
 - [x] Make a website for this
-- [ ] Figure out how to host this on vapor without having my DB credentials public
+- [x] Figure out how to host this on vapor without having my DB credentials public
 
