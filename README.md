@@ -42,4 +42,5 @@ Decided against this again, was too hard to maintain the shuffled order of a dec
 - [x] Implement drawing from piles
 - [x] Make a website for this
 - [x] Figure out how to host this on vapor without having my DB credentials public
+- [ ] make something that will delete all the cards in decks that havent been used in X days
 
