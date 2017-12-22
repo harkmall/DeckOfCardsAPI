@@ -14,6 +14,7 @@ final class Deck: Model {
     let storage = Storage()
     
     var shuffled: Bool
+    var lastUpdated: Date
     var cards: Children<Deck, Card> {
         return children()
     }
@@ -24,15 +25,18 @@ final class Deck: Model {
     func makeRow() throws -> Row {
         var row = Row()
         try row.set("shuffled", shuffled)
+        try row.set("lastUpdated", lastUpdated)
         return row
     }
     
     init(row: Row) throws {
         shuffled = try row.get("shuffled")
+        lastUpdated = try row.get("lastUpdated")
     }
     
     init(shuffle: Bool) {
         self.shuffled = shuffle
+        self.lastUpdated = Date()
     }
 }
 
@@ -45,6 +49,7 @@ extension Deck: Preparation {
         try database.create(self) { builder in
             builder.id()
             builder.bool("shuffled")
+            builder.date("lastUpdated")
         }
     }
 

@@ -1,6 +1,7 @@
 import FluentProvider
 import MongoProvider
 import LeafProvider
+import AuthProvider
 
 extension Config {
     public func setup() throws {
@@ -17,6 +18,7 @@ extension Config {
         try addProvider(LeafProvider.Provider.self)
         try addProvider(FluentProvider.Provider.self)
         try addProvider(MongoProvider.Provider.self)
+        try addProvider(AuthProvider.Provider.self)
     }
     
     /// Add all models that should have their
@@ -25,5 +27,6 @@ extension Config {
         preparations.append(Card.self)
         preparations.append(Deck.self)
         preparations.append(Pile.self)
+        preparations.append(User.self)
     }
 }

@@ -1,5 +1,6 @@
 import Vapor
 import HTTP
+import AuthProvider
 
 struct DeckController {
     
@@ -11,6 +12,51 @@ struct DeckController {
                  "AH", "2H", "3H", "4H", "5H", "6H", "7H", "8H", "9H", "0H", "JH", "QH", "KH"]
     
     func addRoutes(to drop: Droplet) {
+        
+        let passwordProtectedGroup = drop.grouped(PasswordAuthenticationMiddleware(User.self))
+        
+        passwordProtectedGroup.get("clean") { req in
+            //clean out the old decks and their cards
+            var weekAgo = Date()
+            weekAgo.addTimeInterval(-7*24*60*60)
+            let oldDecks = try Deck.makeQuery().filter("lastUpdated", .lessThan, weekAgo).all()
+            
+            for deck in oldDecks {
+                for card in try deck.cards.all() {
+                    try card.delete()
+                }
+                for pile in try deck.piles.all() {
+                    for card in try pile.cards.all() {
+                        try card.delete()
+                    }
+                    try pile.delete()
+                }
+                try deck.delete()
+            }
+            
+            return Response(status: .ok)
+        }
+        
+//        drop.post("/user") { req in
+//
+//            guard let json = req.json else {
+//                throw Abort(.badRequest)
+//            }
+//
+//            let user = try User(json: json)
+//
+//            // require a plaintext password is supplied
+//            guard let password = json["password"]?.string else {
+//                throw Abort(.badRequest)
+//            }
+//
+//            // hash the password and set it on the user
+//            user.password = try drop.hash.make(password.makeBytes()).makeString()
+//
+//            try user.save()
+//            return Response(status: .ok)
+//        }
+        
         let deckGroup = drop.grouped("deck")
         
         let newDeckGroup = deckGroup.grouped("new")
@@ -22,12 +68,12 @@ struct DeckController {
         }
         
         deckGroup.get(Deck.parameter) { req in
-            let deck = try req.parameters.next(Deck.self)
+            let deck = try req.deck()
             return deck
         }
         
         deckGroup.get(Deck.parameter, "draw") { req in
-            let deck = try req.parameters.next(Deck.self)
+            let deck = try req.deck()
             var deckCards = try deck.cards.all()
             var drawCards = 1
             if let numCards = req.data["count"]?.int, numCards > 0 {
@@ -54,7 +100,7 @@ struct DeckController {
         }
         
         deckGroup.get(Deck.parameter, "shuffle") { req in
-            let deck = try req.parameters.next(Deck.self)
+            let deck = try req.deck()
             deck.shuffled = true
             try deck.save()
             
@@ -70,7 +116,7 @@ struct DeckController {
         }
         
         deckGroup.get(Deck.parameter, "pile", Pile.parameter, "add") { req in
-            let deck = try req.parameters.next(Deck.self)
+            let deck = try req.deck()
             guard let name = req.parameters["pile_Id"]?.string, let cards = req.data["cards"]?.string?.commaSeparatedArray() else {
                 throw Abort.badRequest
             }
@@ -101,7 +147,7 @@ struct DeckController {
         }
         
         deckGroup.get(Deck.parameter, "pile", Pile.parameter, "draw") { req in
-            let deck = try req.parameters.next(Deck.self)
+            let deck = try req.deck()
             guard let name = req.parameters["pile_Id"]?.string else {
                 throw Abort.badRequest
             }
@@ -144,7 +190,7 @@ struct DeckController {
         }
         
         deckGroup.get(Deck.parameter, "pile", Pile.parameter, "draw", "bottom") { req in
-            let deck = try req.parameters.next(Deck.self)
+            let deck = try req.deck()
             guard let name = req.parameters["pile_Id"]?.string else {
                 throw Abort.badRequest
             }
@@ -209,4 +255,14 @@ struct DeckController {
 }
 
 extension DeckController: EmptyInitializable { }
+
+extension Request {
+    
+    func deck() throws -> Deck{
+        let deck = try parameters.next(Deck.self)
+        deck.lastUpdated = Date()
+        try deck.save()
+        return deck
+    }
+}
 
