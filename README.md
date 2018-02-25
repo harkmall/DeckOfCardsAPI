@@ -4,6 +4,7 @@
 [![License](https://img.shields.io/badge/license-BSD-green.svg?style=flat)](https://github.com/harkmall/MHSegmentedControl/blob/master/LICENSE)
 
 **It's ALIVE: the api is alive and running: [https://deckofcards.vapor.cloud/](https://deckofcards.vapor.cloud/) 🤘🏻**
+**Disclaimer: I had to take the databse off of the API cause it was costing $$, so this may or may not still work**
 
 ## How to run this
 
